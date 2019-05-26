@@ -1,29 +1,21 @@
-# Domainfo
+# Domainfo / Vue 
+## It's running right now!
+This UI is running [here](https://mariopayan.github.io/domainfo-ui/)
+* Deployed with GitHub pages
 
-## Project setup
-```
-yarn install
-```
+Or continue in order to make it running locally
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+## Dependencies
+* vue@2.6.10
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+## Install
+* Go to project directory
+* Run the command `npm install`
 
-### Run your tests
-```
-yarn run test
-```
+## Run
 
-### Lints and fixes files
-```
-yarn run lint
-```
+### UI
+* Run the commmand `npm run serve`
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Usage
+You will see UI running using `localhost:8080`, or you can look the url in your console once the UI starts
