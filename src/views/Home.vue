@@ -41,6 +41,14 @@
           and just look for "In progress" fields, if everything is ok, just
           search again!
         </h6>
+        <h6 v-if="invalidDomain">
+          Please review your domain, don't use 'http://' either 'www.', just
+          leave it like 'domain.com'
+        </h6>
+        <h2 v-if="backendDown">
+          Panic! Looks like there is a problem in the backend side, try with
+          another url, if fail again, please contact the admin
+        </h2>
       </b-col>
       <b-col cols="8">
         <b-card
@@ -99,10 +107,13 @@
         </b-card>
         <b-card id="textHelp" v-else img-src="../assets/domainfo.png" img-top>
           <b-card-text>
-            <h4>
-              Type a domain like "truora.com" on the left side and click the
-              search button to get and show the info
-            </h4>
+            <div v-if="backendDown">
+              <h4>
+                Type a domain like "truora.com" on the left side and click the
+                search button to get and show the info
+              </h4>
+              <h6>{{ errorMessage }}</h6>
+            </div>
           </b-card-text>
         </b-card>
       </b-col>
@@ -124,6 +135,9 @@ export default class Home extends Vue {
   @Prop({ default: false }) private loading!: boolean;
   @Prop({ default: false }) private internalLoading!: boolean;
   @Prop({ default: false }) private showData!: boolean;
+  @Prop({ default: false }) private invalidDomain!: boolean;
+  @Prop({ default: false }) private backendDown!: boolean;
+  @Prop({ default: false }) public errorMessage!: string;
   @Prop({ default: new Domain() }) domain_data!: Domain;
   data() {
     return {
@@ -149,53 +163,67 @@ export default class Home extends Vue {
     this.domain = "";
     this.showData = false;
   }
+  isDomainOk() {
+    let regex = new RegExp(/^\w+(\.\w+)$/);
+    let valid = regex.test(this.domain);
+    this.invalidDomain = !valid;
+    return valid;
+  }
   search() {
-    this.loading = true;
-    this.internalLoading = false;
-    this.showData = false;
-
-    fetch(apiUrl + "domain/" + this.domain, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-      .then(response => {
-        if (response.status === 211) {
-          this.internalLoading = true;
-          this.search();
-          return null;
-        } else if (response.status === 206) {
-          this.internalLoading = true;
-        } else if (response.status === 200) {
-          this.internalLoading = false;
+    if (this.isDomainOk()) {
+      this.loading = true;
+      this.internalLoading = false;
+      this.showData = false;
+      fetch(apiUrl + "domain/" + this.domain, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
         }
-        return response.json();
       })
-      .then(data => {
-        if (data) {
-          this.domain_data.ServersChanged =
-            "ServersChanged" in data ? data.ServersChanged : false;
-          this.domain_data.SSLGrade =
-            "SSLGrade" in data && data.JAJAJAJAJAJA != ""
-              ? data.SSLGrade
-              : "¯\\_(ツ)_/¯";
-          this.domain_data.PreviousSSLGrade =
-            "PreviousSSLGrade" in data && data.PreviousSSLGrade != ""
-              ? data.PreviousSSLGrade
-              : "¯\\_(ツ)_/¯";
-          this.domain_data.Logo =
-            "Logo" in data && data.Logo != "" ? data.Logo : "¯\\_(ツ)_/¯";
-          this.domain_data.Title =
-            "Title" in data && data.Title != "" ? data.Title : "¯\\_(ツ)_/¯";
-          this.domain_data.IsDown = "IsDown" in data ? data.IsDown : false;
-          this.domain_data.Status =
-            "Status" in data && data.Status != "" ? data.Status : "¯\\_(ツ)_/¯";
-          this.domain_data.Servers = "Servers" in data ? data.Servers : [];
+        .then(response => {
+          if (response.status === 211) {
+            this.internalLoading = true;
+            this.search();
+            return null;
+          } else if (response.status === 206) {
+            this.internalLoading = true;
+          } else if (response.status === 200) {
+            this.internalLoading = false;
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data) {
+            this.domain_data.ServersChanged =
+              "ServersChanged" in data ? data.ServersChanged : false;
+            this.domain_data.SSLGrade =
+              "SSLGrade" in data && data.JAJAJAJAJAJA != ""
+                ? data.SSLGrade
+                : "¯\\_(ツ)_/¯";
+            this.domain_data.PreviousSSLGrade =
+              "PreviousSSLGrade" in data && data.PreviousSSLGrade != ""
+                ? data.PreviousSSLGrade
+                : "¯\\_(ツ)_/¯";
+            this.domain_data.Logo =
+              "Logo" in data && data.Logo != "" ? data.Logo : "¯\\_(ツ)_/¯";
+            this.domain_data.Title =
+              "Title" in data && data.Title != "" ? data.Title : "¯\\_(ツ)_/¯";
+            this.domain_data.IsDown = "IsDown" in data ? data.IsDown : false;
+            this.domain_data.Status =
+              "Status" in data && data.Status != ""
+                ? data.Status
+                : "¯\\_(ツ)_/¯";
+            this.domain_data.Servers = "Servers" in data ? data.Servers : [];
+            this.loading = false;
+            this.showData = true;
+          }
+        })
+        .catch(error => {
+          this.errorMessage = error;
           this.loading = false;
-          this.showData = true;
-        }
-      });
+          this.showData = false;
+        });
+    }
   }
 }
 </script>
