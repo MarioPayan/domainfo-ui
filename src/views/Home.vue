@@ -48,6 +48,11 @@
         <h2 v-if="backendDown">
           Panic! Looks like there is a problem in the backend side, try with
           another url, if fail again, please contact the admin
+              <h4>
+                Type a domain like "truora.com" on the left side and click the
+                search button to get and show the info
+              </h4>
+              <h6>{{ errorMessage }}</h6>
         </h2>
       </b-col>
       <b-col cols="8">
@@ -107,13 +112,10 @@
         </b-card>
         <b-card id="textHelp" v-else img-src="../assets/domainfo.png" img-top>
           <b-card-text>
-            <div v-if="backendDown">
               <h4>
                 Type a domain like "truora.com" on the left side and click the
                 search button to get and show the info
               </h4>
-              <h6>{{ errorMessage }}</h6>
-            </div>
           </b-card-text>
         </b-card>
       </b-col>
