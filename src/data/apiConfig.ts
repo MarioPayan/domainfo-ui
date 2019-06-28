@@ -1,6 +1,6 @@
 class APIConfig {
   localhost: string = "http://localhost:3333";
-  cloud9: string = "https://domainfo-mariopayan.c9users.io";
+  cloud9: string = "https://https://domainfo.herokuapp.com";
   version: string = "v1";
   name: string = "api";
   public url(env: string) {
